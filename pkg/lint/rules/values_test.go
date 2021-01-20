@@ -118,6 +118,21 @@ func TestValidateValuesFileSchemaOverrides(t *testing.T) {
 	}
 }
 
+func TestValidateValuesFileSchemaOverridesNullValue(t *testing.T) {
+	yaml := "username: admin\npassword:"
+	overrides := map[string]interface{}{
+		"password": "swordfish",
+	}
+	tmpdir := ensure.TempFile(t, "values.yaml", []byte(yaml))
+	defer os.RemoveAll(tmpdir)
+	createTestingSchema(t, tmpdir)
+
+	valfile := filepath.Join(tmpdir, "values.yaml")
+	if err := validateValuesFile(valfile, overrides); err != nil {
+		t.Fatalf("Failed validation with %s", err)
+	}
+}
+
 func createTestingSchema(t *testing.T, dir string) string {
 	t.Helper()
 	schemafile := filepath.Join(dir, "values.schema.json")
